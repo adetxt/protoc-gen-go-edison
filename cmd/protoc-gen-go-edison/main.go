@@ -1,14 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
 const (
-	contextPackage = protogen.GoImportPath("context")
-	grpcPackage    = protogen.GoImportPath("google.golang.org/grpc")
-	echoPackage    = protogen.GoImportPath("github.com/labstack/echo/v4")
-	runtimePackage = protogen.GoImportPath("github.com/grpc-ecosystem/grpc-gateway/v2/runtime")
+	edisonPackage = protogen.GoImportPath("github.com/adetxt/edison")
 )
 
 func main() {
@@ -33,9 +32,9 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P()
 
 	for _, srv := range file.Services {
-		g.P("func Register", srv.GoName, "(gs *", grpcPackage.Ident("Server"), ", mux *", runtimePackage.Ident("ServeMux"), ",  h ", srv.GoName, "Server) {")
-		g.P("Register", srv.GoName, "Server(gs, h)")
-		g.P("Register", srv.GoName, "HandlerServer(", contextPackage.Ident("Background()"), ", mux, h)")
+		g.P(fmt.Sprintf("func Register%s(ed *%s, ser %sServer) {", srv.GoName, edisonPackage.Ident("Edison"), srv.GoName))
+		g.P(fmt.Sprintf("Register%sServer(ed.GRPCServer(), ser)", srv.GoName))
+		g.P(fmt.Sprintf("ed.RegisterGRPCGateway(Register%sHandler)", srv.GoName))
 		g.P("}")
 	}
 
