@@ -32,7 +32,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P()
 
 	for _, srv := range file.Services {
-		g.P(fmt.Sprintf("func Register%s(ed *%s, ser %sServer) {", srv.GoName, edisonPackage.Ident("Edison"), srv.GoName))
+		g.P(fmt.Sprintf("func Register%s(ed *%s, ser %sServer) {", srv.GoName, edisonPackage.Ident("Edison").String(), srv.GoName))
 		g.P(fmt.Sprintf("Register%sServer(ed.GRPCServer(), ser)", srv.GoName))
 		g.P(fmt.Sprintf("ed.RegisterGRPCGateway(Register%sHandler)", srv.GoName))
 		g.P("}")
